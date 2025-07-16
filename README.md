@@ -1,5 +1,3 @@
-Absolutely! Here's the complete `README.md` content in one block — just copy and paste it into your `README.md` file:
-
 ---
 
 ````markdown
