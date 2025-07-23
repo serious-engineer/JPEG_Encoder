@@ -1,75 +1,94 @@
+# JPEG Encoder & Decoder (YUV420P ↔ JPEG)
+
+This project implements a **minimal JPEG image encoder and decoder** in C++, designed to help understand raw image formats and compression workflows. It manually handles **YUV420 planar data**, converts it to RGB, compresses using `libjpeg`, and supports round-trip decoding.
+
 ---
 
-````markdown
-# JPEG Encoder from YUV420 using libjpeg
+## 🔧 Features
 
-This project is a simple JPEG encoder written in C++ that takes raw YUV420p image data and compresses it into a JPEG image using the `libjpeg` library.
+- ✅ Read raw `.yuv` (YUV420P) format
+- ✅ Convert YUV → RGB manually
+- ✅ Encode RGB → JPEG using `libjpeg`
+- ✅ Decode JPEG → RGB → YUV420P
+- ✅ Save reconstructed `.yuv` file
+- ✅ Compatible with `ffplay` and `ffmpeg` for viewing
 
-## 📸 Features
+---
 
-- Supports YUV 4:2:0 planar format (Y, U, V planes separately)
-- Converts YUV to RGB manually using standard formulas
-- Compresses the RGB data into a JPEG file using libjpeg
-- Lightweight and dependency-free except for `libjpeg`
+## 🛠 Dependencies
 
-## 🛠️ Requirements
+- C++11 or later
+- [`libjpeg-dev`](https://libjpeg.sourceforge.net/)
+- [`ffmpeg`](https://ffmpeg.org/) *(optional, for viewing)*
 
-- Linux (or any POSIX system)
-- `g++` or compatible C++ compiler
-- `libjpeg-dev`
-
-Install dependencies (Debian/Ubuntu):
+### 🐧 Install on Ubuntu:
 
 ```bash
 sudo apt update
-sudo apt install libjpeg-dev g++
-````
+sudo apt install build-essential libjpeg-dev ffmpeg
+```
 
-## 🧪 Generate a Sample Input
+---
 
-Use `ffmpeg` to convert an image to raw YUV420:
+## 🚀 Build Instructions
 
 ```bash
-ffmpeg -i input.jpg -pix_fmt yuv420p -s 640x480 -f rawvideo input.yuv
+g++ main.cpp -o jpeg_tool -ljpeg
 ```
 
-## 🚀 Build
+---
+
+## 📦 Usage
+
+### Encode YUV → JPEG
 
 ```bash
-g++ -o yuv_to_jpeg yuv_to_jpeg.cpp -ljpeg
+./jpeg_tool encode input.yuv output.jpg 640 480
 ```
 
-## 🖼️ Run
+### Decode JPEG → YUV
 
 ```bash
-./yuv_to_jpeg
+./jpeg_tool decode input.jpg output.yuv 640 480
 ```
 
-* It reads `input.yuv` (YUV420 planar)
-* Converts to RGB
-* Saves the output as `output.jpg`
+- Replace `640` and `480` with your image width and height.
 
-## 📂 File Format Assumptions
+---
 
-The `input.yuv` file is expected to be in **YUV420 planar format**, with the following layout:
+## 👁️ View YUV Output
 
-* Y plane: width × height bytes
-* U plane: (width/2) × (height/2) bytes
-* V plane: (width/2) × (height/2) bytes
+Using `ffplay`:
 
-Total size = width × height × 1.5 bytes
-
-## 📎 Sample Output
-
-Output is a valid JPEG image written using `libjpeg`.
-
-## 🧰 Project Structure
-
-```
-JPEG_Encoder/
-├── yuv_to_jpeg.cpp        # Main C++ source file
-├── input.yuv              # Sample raw YUV420 image (not committed)
-├── output.jpg             # Encoded JPEG image
-└── README.md              # Project documentation
+```bash
+ffplay -f rawvideo -video_size 640x480 -pixel_format yuv420p output.yuv
 ```
 
+Or convert to PNG:
+
+```bash
+ffmpeg -f rawvideo -pixel_format yuv420p -video_size 640x480 -i output.yuv frame.png
+```
+
+---
+
+## 📁 File Format Assumptions
+
+- `input.yuv` is in **YUV420P (planar)** format:
+  ```
+  [Y plane][U plane][V plane]
+  ```
+- Width and height must be specified manually (no header parsing)
+- JPEG quality is fixed (can be extended to add as argument)
+
+---
+
+## 🙌 Author
+
+**Krishnaprasad Sreekumar Nair**  
+
+---
+
+## 📜 License
+
+MIT License. Contributions and forks are welcome!
